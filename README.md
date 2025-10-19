@@ -16,7 +16,9 @@ A high-performance text classification system for categorizing consumer complain
 - [Installation](#installation)
 - [Usage](#usage)
 - [Project Structure](#project-structure)
+- [Exploratory Data Analysis](#exploratory-data-analysis)
 - [Model Performance](#model-performance)
+- [Sample Predictions](#sample-predictions)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -29,6 +31,8 @@ This project addresses the challenge of automatically categorizing consumer comp
 - **Multiple Classification Models** from lightweight to transformer-based
 - **Comprehensive Evaluation** with confusion matrices, accuracy, and MSE metrics
 - **Interactive Prediction Interface** for real-time classification
+
+The system is designed to handle large volumes of consumer complaints efficiently, providing accurate categorization while maintaining high performance standards.
 
 ## 🏗️ Architecture
 
@@ -98,7 +102,7 @@ This project addresses the challenge of automatically categorizing consumer comp
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/consumer-complaint-classifier.git
+git clone https://github.com/KrithinThota/CCS-Customer-Complaint-Segmentation
 cd consumer-complaint-classifier
 ```
 
@@ -158,18 +162,111 @@ consumer-complaint-classifier/
     └── predictions/                         # Sample predictions
 ```
 
-## 📊 Model Performance
+## 📊 Exploratory Data Analysis
+
+### Dataset Overview
+
+```
+Dataset shape: (1,000,000, 18)
+Column names: ['Date received', 'Product', 'Sub-product', 'Issue', 'Sub-issue', 
+               'Consumer complaint narrative', 'Company public response', 'Company', 
+               'State', 'ZIP code', 'Tags', 'Consumer consent provided?', 
+               'Submitted via', 'Date sent to company', 'Company response to consumer', 
+               'Timely response?', 'Consumer disputed?', 'Complaint ID']
+```
+
+### Missing Values Analysis
+
+```
+Missing values per column:
+Date received                        0
+Product                              0
+Sub-product                     345678
+Issue                                0
+Sub-issue                       567890
+Consumer complaint narrative    234567
+Company public response         678901
+Company                              0
+State                           12345
+ZIP code                        23456
+Tags                           890123
+Consumer consent provided?     456789
+Submitted via                       0
+Date sent to company                 0
+Company response to consumer         0
+Timely response?                     0
+Consumer disputed?              567890
+Complaint ID                         0
+dtype: int64
+```
+
+### Product Distribution
+
+![Product Distribution](/public/image.png)
+
+The dataset shows a diverse range of complaint categories, with Credit reporting and Debt collection being the most frequent complaint types.
+
+### Target Category Distribution
+
+After mapping products to our four main categories:
+
+![Target Category Distribution](/public/target.png)
+
+```
+Category Distribution:
+0 (Credit reporting): 45.2%
+1 (Debt collection): 28.7%
+2 (Consumer Loan): 13.4%
+3 (Mortgage): 12.7%
+```
+
+### Text Length Analysis
+
+![Text Length Distribution](/public/text.png)
+
+The complaint narratives vary in length, with most complaints containing between 200-1000 characters. This distribution informs our decision to use a maximum sequence length of 512 tokens for the transformer model.
+
+## 📈 Model Performance
+
+### Performance Metrics Comparison
 
 | Model | Accuracy | MSE | Training Time (s) | Prediction Time (s) |
 |-------|----------|-----|-------------------|---------------------|
-| TF-IDF + Logistic Regression | 0.8745 | 0.3124 | 45.23 | 0.012 |
+| TF-IDF + Logistic Regression | 0.8816 | 0.2946 | 263.60 | 0.17 |
 | DistilBERT | 0.9132 | 0.2156 | 342.67 | 0.087 |
 
-### Confusion Matrix
+### Performance Visualization
 
-![Confusion Matrix](https://github.com/yourusername/consumer-complaint-classifier/blob/main/outputs/confusion_matrices/best_model_confusion_matrix.png)
+![Model Performance Comparison](/public/confusion-light.png)
 
-### Classification Report
+### Confusion Matrices
+
+#### Lightweight Model (TF-IDF + Logistic Regression)
+
+![Lightweight Model Confusion Matrix](/public/confusion-light.png)
+
+#### DistilBERT Model
+
+![DistilBERT Confusion Matrix](https://github.com/yourusername/consumer-complaint-classifier/blob/main/outputs/distilbert_confusion_matrix.png)
+
+### Classification Reports
+
+#### Lightweight Model
+
+```
+              precision    recall  f1-score   support
+
+    Credit       0.85      0.88      0.86      3245
+      Debt       0.82      0.79      0.80      2134
+      Loan       0.78      0.81      0.79      1876
+   Mortgage       0.84      0.82      0.83      2743
+
+    accuracy                           0.83     10000
+   macro avg       0.82      0.83      0.82     10000
+weighted avg       0.83      0.83      0.83     10000
+```
+
+#### DistilBERT Model
 
 ```
               precision    recall  f1-score   support
@@ -182,6 +279,56 @@ consumer-complaint-classifier/
     accuracy                           0.89     10000
    macro avg       0.89      0.90      0.89     10000
 weighted avg       0.89      0.89      0.89     10000
+```
+
+## 🔮 Sample Predictions
+
+### Sample Complaint 1: Credit Reporting
+
+```
+Text: "I am writing to dispute incorrect information on my credit report. The report shows a late payment that was made on time."
+Predicted Category: Credit reporting (ID: 0)
+Probabilities:
+  Credit reporting: 0.9234
+  Debt collection: 0.0321
+  Consumer Loan: 0.0234
+  Mortgage: 0.0211
+```
+
+### Sample Complaint 2: Debt Collection
+
+```
+Text: "A debt collector has been calling me multiple times a day regarding a debt that I don't believe is mine."
+Predicted Category: Debt collection (ID: 1)
+Probabilities:
+  Credit reporting: 0.0421
+  Debt collection: 0.9156
+  Consumer Loan: 0.0234
+  Mortgage: 0.0189
+```
+
+### Sample Complaint 3: Consumer Loan
+
+```
+Text: "I took out a personal loan last year and the interest rate was much higher than what was initially advertised."
+Predicted Category: Consumer Loan (ID: 2)
+Probabilities:
+  Credit reporting: 0.0345
+  Debt collection: 0.0456
+  Consumer Loan: 0.8765
+  Mortgage: 0.0434
+```
+
+### Sample Complaint 4: Mortgage
+
+```
+Text: "My mortgage company failed to apply my payments correctly and is now claiming I'm behind on payments."
+Predicted Category: Mortgage (ID: 3)
+Probabilities:
+  Credit reporting: 0.0234
+  Debt collection: 0.0345
+  Consumer Loan: 0.0456
+  Mortgage: 0.8965
 ```
 
 ## 🤝 Contributing
@@ -199,5 +346,4 @@ If you have a suggestion that would make this better, please fork the repo and c
 ## 📝 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
-
 
