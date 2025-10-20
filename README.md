@@ -237,7 +237,7 @@ The complaint narratives vary in length, with most complaints containing between
 
 ### Performance Visualization
 
-![Model Performance Comparison](/public/confusion-light.png)
+<!-- ![Model Performance Comparison](/public/confusion-light.png) -->
 
 ### Confusion Matrices
 
